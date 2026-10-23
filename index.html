@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon.svg"><meta name="theme-color" content="#f7f3ec"><meta name="apple-mobile-web-app-capable" content="yes"><title>My 2027 Coach</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light;--bg:#f7f3ec;--card:#fffdf9;--tx:#2b2623;--mu:#76695f;--ac:#a98550;--ac2:#f1e8d6;--ok:#6f8a6a;--bd:#e4dccf}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:400 15px/1.55 Jost,"Helvetica Neue",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:620px;margin:0 auto;padding:24px 18px 100px}
+h1{font:600 34px/1.1 "Cormorant Garamond",Georgia,serif;margin:4px 0 6px;letter-spacing:.01em}
+#sub{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--mu)}
+h2{font-size:15px;margin:16px 0 8px}
+.mu{color:var(--mu);font-size:13px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin:14px 0;box-shadow:0 1px 2px rgba(43,38,35,.04),0 12px 28px -18px rgba(43,38,35,.25)}
+.card .card{box-shadow:none;background:#faf6ee;margin:6px 0;border-radius:10px}
+.card>b:first-child{font:600 21px "Cormorant Garamond",Georgia,serif;letter-spacing:.01em}
+.row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bd)}.row:last-child{border:0}
+.row.done span.t{text-decoration:line-through;color:var(--mu)}.row .tm{width:62px;color:var(--ac);font-size:12px;font-weight:500;letter-spacing:.04em}.row span.t{flex:1}
+input[type=checkbox]{appearance:none;-webkit-appearance:none;width:24px;height:24px;border:1.5px solid #b9ad9b;border-radius:50%;background:transparent;display:grid;place-items:center;cursor:pointer;flex:none}
+input[type=checkbox]:checked{background:var(--ac);border-color:var(--ac)}input[type=checkbox]:checked::after{content:"\2713";color:#fffdf9;font-size:13px;line-height:1}
+button{background:var(--tx);color:#f7f3ec;border:1px solid var(--tx);border-radius:10px;padding:9px 16px;font:500 14px Jost,system-ui,sans-serif;letter-spacing:.02em;cursor:pointer}
+button:active{opacity:.8}button.g{background:transparent;color:var(--tx);border-color:#cfc4b3}
+input[type=text]{width:100%;padding:11px 12px;border-radius:10px;border:1px solid #cfc4b3;background:#fffdf9;color:var(--tx);font:inherit}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:rgba(255,253,249,.96);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px);max-width:620px;margin:0 auto}
+nav button{flex:1;background:none;border:0;border-radius:0;padding:15px 2px;font-size:12px;letter-spacing:.04em;color:var(--mu)}nav button.on{color:var(--tx);font-weight:500;box-shadow:inset 0 -2px 0 var(--ac)}
+.bar{height:6px;background:#ece4d6;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac);border-radius:99px}
+.ans{padding:13px 14px;border-radius:10px;margin-top:10px;border:1px solid;color:var(--tx)}
+.no{background:#f3e3df;border-color:#dcc3bb}.yes{background:#e5ebe1;border-color:#c3d0bc}.hm{background:#f4ecd9;border-color:#dccfaa}
+#toasts{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:12px;right:12px;z-index:9;display:flex;flex-direction:column;gap:8px;max-width:520px;margin:0 auto}
+.toast{background:var(--tx);color:#f7f3ec;border-radius:12px;padding:13px 15px;box-shadow:0 14px 30px -12px rgba(0,0,0,.45);display:flex;gap:10px;align-items:center}.toast b{flex:1;font-weight:500}
+.toast button{background:transparent;border-color:#8a7e70;color:#f7f3ec;padding:6px 12px}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:7px 6px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top}
+.cnt{display:flex;align-items:center;gap:8px}.cnt button{padding:4px 14px}
+a{color:#8a6a3a;font-weight:500}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Jost:wght@400;500&display=swap" rel="stylesheet"></head><body>
+<div id="toasts"></div>
+<main><h1>2027 · Big Dreams, Real Plans</h1><div class="mu" id="sub"></div><div id="v"></div></main>
+<nav id="nav"></nav>
+<script>
+const $=s=>document.querySelector(s);
+const D=()=>new Date().toLocaleDateString("en-CA");
+let S={days:{},goals:{lc:0,cust:0,cp:{}},fired:{}};
+try{const x=localStorage.getItem("coach1");if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
+const save=()=>{try{localStorage.setItem("coach1",JSON.stringify(S))}catch(e){}};
+const day=()=>S.days[D()]||(S.days[D()]={done:{},water:0,note:""});
+
+// time, id, label, nag (minutes later to nag if not done)
+const T=[["07:00", "e", "Warm water + lemon + 5 almonds. 5 min of sunlight "], ["07:10", "vb", "Vitamin B12 with water (dose as your doctor advised)"], ["09:00", "b", "Breakfast (protein first!). Send pic to trainer", 15], ["10:00", "o", "Office start: fill your 1 L bottle + write today’s top 3 priorities"], ["11:30", "s1", "Fruit + nuts snack"], ["13:30", "l", "Lunch: fiber → protein → carbs. Send pic to trainer", 15], ["13:40", "vd", "Vitamin D with lunch (needs fat to absorb)"], ["14:00", "w1", "10–15 min walk after lunch"], ["16:00", "s2", "Protein snack (beats the 4 PM slump)"], ["18:30", "x", "Workout: Mon/Wed run-walk · Tue/Fri strength · Thu swim · Sat 7:30 AM long · Sun rest walk", 30], ["19:30", "d", "Dinner (high protein + fiber). Send pic to trainer", 15], ["20:00", "w2", "10–15 min walk after dinner"], ["20:30", "lc", "1 LeetCode question (minimum!)", 60], ["21:15", "su", "15–20 min for The Banyan Roost"], ["22:00", "ph", "Phone away: read 20 min, write 1 win, meditate 5"], ["22:30", "sl", "Lights out. 7–8 h sleep = energy tomorrow"]];
+const hourly=[["11:00", "walk", "Desk reset: stand, walk 3–5 min, look 20 ft away for 20 s "], ["12:00", "walk", "Walk 3–5 min + water check  (1 L by lunch)"], ["13:00", "walk", "Shoulder + neck stretch before lunch"], ["15:00", "walk", "3 PM slump? Walk + water, no sugar. You’ve got this"], ["17:00", "walk", "Last desk walk. Finish your 2 L "]];
+const water=[["12:30", "Water check: 1 L done?"], ["16:30", "Water check: 2 L done?"], ["19:00", "Water check: finish your glasses"]];
+
+function toast(msg,sub){const t=document.createElement("div");t.className="toast";t.innerHTML="<b></b><button>OK</button>";t.firstChild.textContent=msg;t.lastChild.onclick=()=>t.remove();$("#toasts").prepend(t);setTimeout(()=>t.remove(),60000);
+ try{if("Notification"in window&&Notification.permission==="granted"){if(navigator.serviceWorker)navigator.serviceWorker.ready.then(r=>r.showNotification("My Coach",{body:msg,icon:"icon.svg"}));else new Notification("My Coach",{body:msg})}}catch(e){}
+ try{navigator.vibrate&&navigator.vibrate(200)}catch(e){}}
+function tick(){const n=new Date(),hm=n.toTimeString().slice(0,5),k=D(),f=S.fired[k]||(S.fired={[k]:{}})[k];
+ const mins=s=>+s.slice(0,2)*60+ +s.slice(3);const nm=n.getHours()*60+n.getMinutes();
+ const fire=(id,msg)=>{if(!f[id]){f[id]=1;toast(msg);save()}};
+ T.forEach(([t,id,l,nag])=>{if(t===hm)fire(id," "+l+"  "+cute()+ex(id));
+  if(nag&&nm===mins(t)+nag&&!day().done[id])fire(id+"n"," Still not done: "+l.split(" – ")[0])});
+ hourly.forEach(([t,id,l])=>{if(t===hm)fire(id+t," "+l)});
+ water.forEach(([t,l])=>{if(t===hm)fire("w"+t," "+l)});
+ if(hm==="07:00")fire("mode"," Home or travelling today? Open Today and tap one.");
+ if(n.getDay()===0&&hm==="18:00")fire("wk"," Sunday review: check Goals tab, plan the week");
+}
+setInterval(tick,20000);
+
+let tab="today";
+const tabs=[["today","Today"],["day","Routine"],["ask","Ask"],["move","Move"],["goals","Goals"],["trip","Travel"]];
+$("#nav").innerHTML=tabs.map(([k,l])=>`<button data-k="${k}">${l}</button>`).join("");
+$("#nav").onclick=e=>{if(e.target.dataset.k){tab=e.target.dataset.k;draw()}};
+
+function draw(){[...$("#nav").children].forEach(b=>b.classList.toggle("on",b.dataset.k===tab));
+ const d=day(),n=new Date(),nm=n.toTimeString().slice(0,5);
+ $("#sub").textContent=n.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"})+" · you only need to do the next thing";
+ if(tab==="today"){const done=T.filter(x=>d.done[x[1]]).length,pct=Math.round(done/T.length*100);
+  const next=T.find(x=>x[0]>=nm&&!d.done[x[1]])||T.find(x=>!d.done[x[1]]);
+  let h=modeCard()+`<div class="card"><div class="mu">NEXT UP</div><div style="font-size:18px;font-weight:600">${next?next[0]+" · "+next[2]:"All done today "}</div><div class="bar" style="margin-top:10px"><i style="width:${pct}%"></i></div><div class="mu">${done}/${T.length} done today</div></div>`;
+  h+=`<div class="card cnt"> Water: <b>${d.water}</b>/10–12 glasses <button class="g" onclick="wat(-1)">−</button><button onclick="wat(1)">+ glass</button></div><div class="card">`;
+  h+=T.map(([t,id,l])=>`<label class="row ${d.done[id]?"done":""}"><span class="tm">${t}</span><span class="t">${l}</span><input type="checkbox" ${d.done[id]?"checked":""} onchange="chk('${id}',this.checked)"></label>${opt(id)}`).join("")+"</div>";
+  h+=`<div class="card"><div class="mu">Meal log (write what you ate)</div><input type="text" id="note" placeholder="e.g. 2 egg omelette + toast…" value="${d.note.replace(/"/g,"&quot;")}" onchange="day().note=this.value;save()"></div>`;
+  h+=`<button class="g" onclick="perm()">Enable popup notifications</button><p class="mu">Popups fire while this tab/app is open. Keep it pinned, and for a hard backup set 3 phone alarms: meals, workout, bedtime.</p>`;
+  $("#v").innerHTML=h}
+ if(tab==="ask")$("#v").innerHTML=`<div class="card"><b>Ask me: can I eat/do this?</b><div class="mu" style="margin:4px 0 8px">Strict answers based on your plan (1200–1400 kcal, no sugar/refined/processed). Try: “can I have pizza”, “skip breakfast”, “workout twice today”.</div><input type="text" id="q" placeholder="Can I have…" onkeydown="if(event.key==='Enter')ask()"><div style="margin-top:8px"><button onclick="ask()">Check</button></div><div id="a"></div></div><div class="card"><b>Your daily frame</b><div class="mu">Calories 1200–1400 · Protein 70–90 g · Carbs 100–140 g · Fats 40–55 g · Fiber 20–30 g · Water 10–12 glasses · Sleep 6–8 h</div></div>`;
+ if(tab==="move")$("#v").innerHTML=moveHTML();
+ if(tab==="goals")$("#v").innerHTML=goalsHTML();
+ if(tab==="trip")$("#v").innerHTML=tripHTML();
+ if(tab==="day")$("#v").innerHTML=routineHTML();
+ if(tab==="today")$("#v").insertAdjacentHTML("afterbegin",`<div class="card" style="background:var(--ac2)"> ${cute(1)}</div>`);
+}
+function chk(id,v){day().done[id]=v;save();draw()}
+function wat(n){const d=day();d.water=Math.max(0,d.water+n);save();draw()}
+function perm(){try{Notification.requestPermission().then(()=>toast("Notifications set. In-app popups always work."))}catch(e){toast("Your browser blocks system notifications – in-app popups still work.")}}
+
+const NO=["pizza","burger","fries","chips","maggi","noodles","pasta","biscuit","cookie","cake","chocolate","ice cream","icecream","sweet","mithai","gulab","jalebi","samosa","pakora","kachori","namkeen","soda","coke","pepsi","cold drink","juice","sugar","sugary","bread","maida","naan","paratha","puri","alcohol","beer","wine","vodka","fried","chole bhature","momos","sandwich","bakery","candy","milkshake","packaged","processed","rice bowl"];
+const OK=["egg","paneer","tofu","dal","sprout","chana","makhana","roti","curd","salad","soup","oats","chilla","cheela","idli","dosa","khichdi","poha","apple","guava","papaya","berries","pear","almond","walnut","peanut","bhurji","tikka","sabzi","sabji","raita","soy","chicken","bhindi","palak","lauki","ragi","upma"];
+function ask(){const q=($("#q").value||"").toLowerCase(),a=$("#a");let c,m;
+ if(/skip.*(breakfast|meal|lunch|dinner)|no breakfast|fast(ing)?\b/.test(q)){c="no";m="NO. Never skip meals. Breakfast is mandatory and skipped meals lead to overeating later."}
+ else if(/(twice|two times|2 times|double).*(workout|exercise|run|gym)|workout.*(twice|2x)/.test(q)){c="no";m="NO. One workout a day. Extra walks are fine, a second session is not. Recovery is where progress happens."}
+ else if(/(skip|miss|no).*(workout|walk|run|sleep)/.test(q)){c="no";m="NO. If you’re exhausted, do a 20-min easy walk instead of nothing. Sleep: be in bed by 22:30."}
+ else if(/wine|beer|vodka|whisky|whiskey|alcohol|cocktail|rum\b|gin\b|drinks?\b.*(trip|party)/.test(q)){c="hm";m="Only if you set the limit BEFORE: max 1–2 drinks. Choose wine, light beer or vodka/whisky with soda. Eat protein first, never on an empty stomach, alternate each drink with water, skip fried snacks and sweet mixers."}
+ else if(/(what|options?|ideas?|suggest).*(breakfast|lunch|dinner|snack)/.test(q)&&!NO.some(w=>q.includes(w))){const k=/breakfast/.test(q)?["b"]:/lunch/.test(q)?["l"]:/dinner/.test(q)?["d"]:["s1","s2"];const o=[].concat(...k.map(opts)).sort(()=>Math.random()-.5).slice(0,3);c="yes";m="Pick one:<br>• "+o.join("<br>• ")}
+ else if(/buffet/.test(q)){c="hm";m="Scan first, serve once. Half plate veg/salad, quarter protein, quarter carbs, dessert only if you truly want it. Start with soup/salad. Stop at 80% full."}
+ else if(/cheat|treat|reward/.test(q)){c="hm";m="Not today. Plan one small treat only after a full week of ticks, and tell your trainer first."}
+ else{const bad=NO.find(w=>q.includes(w)),good=OK.find(w=>q.includes(w));
+  if(bad){c="no";m=`NO to “${bad}”. It’s processed/sugary/refined and not in your plan. Pick from your meal options: eggs, paneer, dal, sprouts, roasted chana or makhana.`}
+  else if(good){c="yes";m=`YES, if it follows plan portions: 2 small rotis max at lunch, 1 at dinner, 1 tsp oil, protein first. Eat slowly and send a pic to your trainer.`}
+  else{c="hm";m="Not on your plan, so the answer is NO by default. Ask your trainer or ask me in the Claude chat with the exact food and quantity."}}
+ a.innerHTML=`<div class="ans ${c}">${m}</div>`}
+
+function moveHTML(){const wk=[["Mon","6:30 PM run/walk intervals (30 min)"],["Tue","6:30 PM strength, full body (30 min)"],["Wed","6:30 PM run/walk intervals"],["Thu","6:30 PM swim 30 min or easy 45-min walk"],["Fri","6:30 PM strength, full body"],["Sat","7:30 AM long run/walk (builds to 10K)"],["Sun","Rest + sunny 30-min walk, weekly check-in"]];
+ const pl=[["Wk 1–2","Jog 1 min / walk 2 min × 8","20–25 min"],["Wk 3–4","Jog 2 / walk 2 × 6","25–30 min"],["Wk 5–6","Jog 3 / walk 2 × 5","30 min"],["Wk 7–8","Jog 5 / walk 1 × 5","35 min"],["Wk 9","Jog 8 / walk 1 × 4, long day 6–7 km","50 min"],["Wk 10+","Long day 8 → 10 km (run/walk is fine!)","60–90 min"]];
+ return `<div class="card"><b>Ideal routine: ONE workout a day, 5–6 days/week</b><div class="mu">At 108 kg, two sessions a day raises injury risk and hunger, with no benefit. Add the hourly walks instead. Workout time: 5:30 PM.</div></div>
+ <div class="card"><b>Weekly split</b><table>${wk.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join("")}</table></div>
+ <div class="card"><b>Strength (3 sets × 10–12)</b><div class="mu">Squat to chair, glute bridge, wall/incline push-ups, dumbbell row, dumbbell shoulder press, plank 20–30 s. Add 5-min warm-up and stretch.</div></div>
+ <div class="card"><b>Road to 10K</b><table>${pl.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table><div class="mu">Pace: you should be able to talk. Walk breaks are not failing. Shoes on, knees happy.</div></div>`}
+
+const CP=["Brand + name locked","Website live (MVP)","Waitlist / signup form","10 pet-owner conversations","Event plan: venue + date","First event hosted","First 10 customers","Pricing + payment set up","Weekly review every Sunday"];
+function goalsHTML(){const g=S.goals;const bar=(l,v,m,k)=>`<div class="card"><div class="cnt"><b style="flex:1">${l}: ${v}/${m}</b><button class="g" onclick="gc('${k}',-1)">−</button><button onclick="gc('${k}',1)">+1</button></div><div class="bar" style="margin-top:8px"><i style="width:${Math.min(100,v/m*100)}%"></i></div></div>`;
+ return bar("LeetCode solved",g.lc,300,"lc")+bar("Paying customers",g.cust,100,"cust")+`<div class="card"><b>Banyan Roost checkpoints</b>${CP.map((c,i)=>`<label class="row"><span class="t ${g.cp[i]?"":""}">${c}</span><input type="checkbox" ${g.cp[i]?"checked":""} onchange="S.goals.cp[${i}]=this.checked;save()"></label>`).join("")}</div>
+ <div class="card"><b>Daily rules</b><div class="mu">LeetCode: 1 question minimum, easy-first, then medium. 300 total ≈ 1 per day all year plus weekend extras. Startup: 15 min a day beats a big Sunday. Don’t add anything new until the current checkpoint is ticked.</div></div>`}
+function gc(k,n){S.goals[k]=Math.max(0,S.goals[k]+n);if(k==="lc"&&n>0)day().done.lc=true;save();draw()}
+const Q=["Quiet consistency builds an extraordinary life.","Discipline is self-respect.","One good meal at a time.","You’re not behind, you’re building.","Small steps, big dreams.","Strong. Healthy. Happy.","Future you is already proud.","Consistent, not perfect.","Same woman, bigger goals.","Tick one box. That’s the whole job."];
+function cute(f){const i=f?new Date().getDate()%Q.length:Math.floor(Math.random()*Q.length);return Q[i]}
+const M={"home": {"e": ["Warm water 250 ml + 1 tsp lemon + 5 soaked almonds", "Jeera water 250 ml + 2 walnut halves"], "b": ["Besan chilla (40 g besan) + 50 g veg + 1 tsp oil + 100 g curd", "Veg omelette (2 eggs + 2 whites) + 50 g veg + 1 toast", "Moong dal chilla (50 g dal) + 100 g paneer stuffing", "Oats upma (30 g oats + 100 g veg) + 150 g hung curd", "Paneer-stuffed multigrain roti (40 g flour + 50 g paneer) + 150 g curd", "Boiled eggs (3) + 100 g sautéed veg", "Oats cheela (30 g) + veg + 150 g hung curd", "Poha (1 cup) + handful peanuts + 150 g hung curd", "Mixed dal idli + sambhar (100 g veg) + 150 g hung curd", "Moong dal dosa + coconut chutney + 80 g tossed paneer"], "s1": ["Apple 100 g + 5 almonds", "Guava 100 g + black salt + 1 tsp chia", "Papaya 100 g + 1 tsp pumpkin seeds", "Berries 50 g + 5 almonds", "Small pear + 2 walnut halves"], "l": ["Grilled paneer 100 g + sautéed veg 100 g + 2 small roti", "Paneer curry (80 g paneer) + veg 100 g + 2 small roti", "Egg curry 120 g + lauki sabzi 100 g + 2 small roti", "Dal (40 g raw) + 2 small roti + mixed salad + 50 g curd", "Soy chunk curry (50 g raw) + veg 100 g + 2 small roti", "2 small roti + palak paneer (80 g paneer) + salad", "1 bowl dal + 1 katori rice + 1 bowl curd + cucumber-tomato salad", "Salad + 2 ragi roti + bhindi/parwal sabzi + 100 g hung curd"], "s2": ["Roasted chana 30 g", "2 boiled eggs", "Paneer cubes 50 g + spices", "Peanut chaat (20 g peanuts + veg)", "Sprout chaat (15 g dry sprouts + 100 g veg)", "Roasted makhana, 1 handful"], "d": ["2 boiled eggs + 1 bowl veg soup", "Paneer tikka 120 g + 1 bowl mixed salad", "Tofu/paneer bhurji 80 g + sprouts salad (120 g veg)", "Chicken soup (150 g chicken) + 100 g sautéed veg", "Veg soup + 2-egg omelette", "Moong dal khichdi (10 g dal, ½ katori oats/brown rice, veg, peanuts) + 100 g hung curd", "Palak dal 1 katori + 1 small roti + sprouts chaat", "Dal 1 glass + paneer sabji 100 g + 1 roti", "Oats khichdi 1 bowl (30 g oats, 100 g veg) + 150 g curd"]}, "trip": {"e": ["Warm lemon water, no sugar", "Green/herbal tea + a few almonds", "Plain water first, always"], "b": ["2 idli + 1 bowl sambar", "2 boiled eggs", "Omelette (2 eggs) + veg", "Veg poha, 1 medium bowl", "Plain oats 35–40 g dry", "Greek yogurt 200 g + fruit + nuts", "1 medium fruit + 10–12 almonds / 4 walnut halves", "Moong dal chilla + curd (North)", "Egg dosa / pesarattu (South)", "Skip: croissants, pancakes, doughnuts, sugary cereal"], "s1": ["1 medium fruit + 10–12 almonds", "Roasted chana 30 g", "Greek yogurt 150–200 g", "Buttermilk 200 ml", "Protein bar (under 5 g sugar)"], "l": ["Dal 1 bowl + 2 rotis + big salad", "Paneer 100–120 g + veg curry + 2 rotis", "Grilled chicken/fish 120–150 g + salad + ½ cup brown rice", "Rajma/chole 1 bowl + salad", "Egg curry (2 eggs) + veg + 2 rotis", "Tandoori chicken/paneer + dal + 1–2 phulkas", "Sambar + rasam + poriyal + grilled fish + small brown rice", "Subway: Veg Delite / Roast Chicken salad, mustard or lemon dressing"], "s2": ["Roasted chana 30 g", "2 boiled eggs", "Nuts and seeds 25–30 g", "Sprouts chaat 1 bowl", "Greek yogurt 150–200 g", "1 medium fruit"], "d": ["Grilled fish/chicken or paneer tikka + mixed veg + dal soup", "Chicken salad 150–200 g", "Dal + mixed veg + 1–2 rotis", "Egg curry/omelette + salad", "Buffet: salad/soup first, ½ plate veg, ¼ protein, ¼ carbs", "Local picks: sashimi/yakitori (Japan), tom yum/grilled fish (Thailand), grilled fish + salad (Italy)"]}};const OPEN={};
+const opts=id=>(M[S.mode||"home"]||M.home)[id]||[];
+function opt(id){const o=opts(id);if(!o.length)return "";
+ return `<div style="padding:0 0 6px 72px"><button class="g" style="padding:4px 10px;font-size:12px" onclick="OPEN['${id}']=!OPEN['${id}'];draw()"> ${OPEN[id]?"Hide":"Options"} (${o.length})</button>${OPEN[id]?o.map((x,i)=>`<div class="card" style="margin:6px 0;padding:8px 10px;font-size:13px" onclick="logOpt('${id}',${i})">${x}</div>`).join("")+`<div class="mu">Tap one to log it as your meal</div>`:""}</div>`}
+function logOpt(id,i){const d=day(),x=opts(id)[i];d.note=(d.note?d.note+" | ":"")+x;save();toast("Logged: "+x);draw()}
+function ex(id){const o=opts(id);if(!o.length)return "";return "  Ideas: "+o.slice().sort(()=>Math.random()-.5).slice(0,2).join(" · ")}
+function setMode(m){S.mode=m;S.modeDay=D();save();draw()}
+function modeCard(){if(S.modeDay!==D())return `<div class="card"><b> Where are you today?</b><div style="margin-top:8px;display:flex;gap:8px"><button onclick="setMode('home')"> At home</button><button onclick="setMode('trip')"> Travelling</button></div></div>`;
+ return `<div class="mu" style="margin:6px 0">${S.mode==="trip"?" Travel mode (meal options match your travel guide)":" Home mode"} · <a href="#" onclick="S.modeDay='';draw();return false" style="color:var(--ac)">change</a></div>`}
+function routineHTML(){const tb=a=>"<table>"+a.map(x=>`<tr><td style="white-space:nowrap"><b>${x[0]}</b></td><td>${x[1]}</td></tr>`).join("")+"</table>";
+const li=a=>"<ul style='margin:6px 0 0;padding-left:18px'>"+a.map(x=>"<li>"+x+"</li>").join("")+"</ul>";
+return `<div class="card"><b>Weekday (office 10–6)</b>${tb([["6:30","Wake, window/sunlight 5 min, no scrolling"],["7:00","Lemon water + almonds, then B12"],["7:15","10 min stretch or easy walk"],["9:00","Breakfast + pic to trainer"],["10:00","Fill 1 L bottle, top 3 priorities"],["11 · 12 · 1 · 3 · 5","3–5 min walk, sip water, eyes break"],["11:30","Fruit + nuts"],["1:30","Lunch + pic, Vitamin D with it"],["2:00","10–15 min walk"],["4:00","Protein snack"],["6:30","Workout 30 min"],["7:30","Dinner + pic, 10–15 min walk"],["8:30","1 LeetCode question"],["9:15","15–20 min Banyan Roost"],["9:45","Chamomile tea, shower"],["10:00","Phone away, read 20 min, 1 win"],["10:30","Lights out"]])}</div>
+<div class="card"><b>Weekend</b>${tb([["Sat 7:30","Long run/walk, then breakfast"],["Sat 4:00","Joy hour: pets, cafe, music, friends"],["Sun 8:00","Sunny 30-min walk + weekly check-in (photo, how you feel)"],["Sun 11:00","Creator batch: film/edit 1 post, schedule it"],["Sun 6:00","Review goals, plan the week, 1 small adventure"]])}</div>
+<div class="card"><b>Energy rules</b>${li(["Never skip a meal or the protein","Tired? Water + walk before anything else","No sugar fix at 3–4 PM: walk and eat the protein snack","Sleep protects everything else"])}</div>
+<div class="card"><b>Vitamins</b><div class="mu">B12 in the morning with water. Vitamin D with lunch, since it needs fat. If your D is a weekly sachet, take it only on your day. Confirm dose with your doctor or trainer.</div></div>
+<div class="card"><b>Vision board alignment</b>${li(["Fitness: 1 workout/day, 10K by Q4","Engineer arc: 1 LeetCode/day, LLM/RAG learning on weekends","Banyan Roost: 15 min/day, then website + validation","Creator era: Sunday batch, Wed caption/script","Life I love: read, sleep, joy hour, travel planning"])}<div class="mu" style="margin-top:6px">Nov–Dec 2026: lock routine, finish 10K run/walk, ~40 LeetCode, website draft, 10 pet-owner chats, pick IG/YT niche + 3 sample posts.</div></div>`}
+function tripHTML(){const li=a=>"<ul style='margin:6px 0 0;padding-left:18px'>"+a.map(x=>"<li>"+x+"</li>").join("")+"</ul>";
+ return `<div class="card"><b> Travel mode: enjoy the trip, don’t restart on Monday</b><div class="mu">One unhealthy meal won’t ruin you. One unhealthy week might.</div></div>
+ <div class="card"><b>5 non-negotiables daily</b>${li(["Protein with every meal","2.5–3 L water","7,000–10,000 steps","2 servings of veg","6+ hours sleep"])}</div>
+ <div class="card"><b>Buffet plate</b>${li(["Walk around, scan first, serve once","½ plate veg/salad (2 fists)","¼ protein (1 palm)","¼ carbs (1 cupped hand) + 1 thumb of fat","Salad/soup first, carbs last, dessert only if you really want it"])}</div>
+ <div class="card"><b>Airport and flight</b>${li(["Protein snack + no-sugar drink","Sandwich: multigrain, no mayo or creamy sauce, extra veg","Water, buttermilk, green tea, black coffee. No soda or packaged juice","Eggs, grilled chicken, paneer or yogurt first. Stop at 80% full","Walk 5–10 min every 60–90 min"])}</div>
+ <div class="card"><b>Pack these</b><div class="mu">Roasted chana 30 g · almonds 15–20 · walnuts 4–5 halves · seeds 2 tbsp · protein bar (&lt;5 g sugar) · unsweetened Greek yogurt · apple/pear/orange · plain makhana 20–25 g</div></div>
+ <div class="card"><b>Hotel portions</b><div class="mu">Breakfast: 2 idli + sambar, 2 eggs, or poha 1 bowl. Lunch/dinner: dal 1 bowl, paneer 100–120 g, grilled chicken/fish 120–150 g, 2 rotis or ½–¾ cup brown rice, 1 big salad. Skip: croissants, pancakes, fried food, cream gravies, butter naan.</div></div>
+ <div class="card"><b>If you drink</b>${li(["Decide your limit first (1–2). Eat first, protein first","Wine, light beer, single spirit with soda","Avoid cocktails, sweet mixers, fried snacks with alcohol","Water between every drink"])}</div>
+ <div class="card"><b>Jet lag</b><div class="mu">Morning sunlight, cool room, no late caffeine, keep your usual sleep routine. 6 good hours beat 8 broken ones.</div></div>
+ <div class="card"><b>Hotel-room movement snack (10–15 min)</b><div class="mu">Squats 15–20 · lunges 10–12/leg · calf raises 20 · wall push-ups 15 · glute bridges 15 · plank 30–60 s · stretch 2–3 min. LeetCode: still do 1 question, even on a plane!</div></div>`}
+draw();tick();
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script></body></html>
